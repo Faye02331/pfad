@@ -1,0 +1,44 @@
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.hko.gov.hk/tide/KCTtextPH2024_uc.htm"
+response = requests.get(url)
+
+from bs4 import BeautifulSoup as bs
+import numpy as np
+
+content = response.text
+soup = bs(content,"html.parser")
+
+tidedata = []
+tides = soup.findAll("td")
+for tide in tides:
+    tidevalue = tide.string
+    if tidevalue !=None and tidevalue[0]==" ":
+        tidedata.append(float(tidevalue.strip())) 
+
+tidedata = tidedata[:31*30]
+tidearr = np.array(tidedata).reshape(31,30)
+
+print(tidearr[0])
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+plt.style.use('_mpl-gallery')
+
+np.random.seed(30)
+x = 0.5 + np.arange(30)
+y = tidearr [0]
+
+fig, ax = plt.subplots()
+
+ax.stem(x, y)
+
+ax.set(xlim=(0, 30), xticks=np.arange(1, 30),
+       ylim=(0, 3), yticks=np.arange(1, 3))
+
+bar_colors = ["b","g","r"]
+plt.bar(x,y,color=bar_colors)
+
+plt.show()
